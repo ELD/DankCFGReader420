@@ -20,12 +20,14 @@ $LHS = ''
 
 # an interator that visits each occurance of X in the RHS of all rules
 def occurances(x)
-  #todo
+  # iterate through all LHSs in the hash,
+  # then search through each of the RHSs in the list for occurances of the symbol
+  # and yeild them
 end
 
-# returns the non-terminal defined by production p
+# returns the non-terminal defined by production p (actually the RHS of a production)
 def leftHandSide(p)
-  #todo
+  # 
 end
 
 # returns an iterator that visits each production for the non-terminal a
@@ -37,7 +39,7 @@ end
 
 # checks which rules can derive lambda in one or more derivations
 def DerviesEmptyString
-  #todo
+  # todo
 end
 
 # ==APPLICATION LOGIC==
