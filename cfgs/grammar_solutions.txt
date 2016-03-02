@@ -1,0 +1,83 @@
+grammar01:
+
+DerivesEmpty(S) False
+DerivesEmpty(B) False
+DerivesEmpty(C) False
+
+First(S) 	{a, b, c, d}
+First(B) 	{b, c, d}
+First(C) 	{c, d}
+
+Follow(S) 	{$, e}
+Follow(B) 	{e, $}
+Follow(C) 	{e, $}
+
+
+
+
+grammar02:
+
+DerivesEmpty(S)	True
+DerivesEmpty(C) True
+DerivesEmpty(A) True
+DerivesEmpty(B) True
+DerivesEmpty(Q) True
+
+First(S) 	{a, b, q, c, $}
+First(C) 	{c}
+First(A) 	{a, b, q}
+First(B) 	{b}
+First(Q) 	{q}
+
+
+Follow(S) 	{$}
+Follow(C) 	{d, $}
+Follow(A) 	{c}
+Follow(B) 	{c, q}
+Follow(Q) 	{c}
+
+
+
+
+grammar03:
+
+DerivesEmpty(S) False
+DerivesEmpty(A) True
+DerivesEmpty(B) True
+
+First(S) 	{c, a, b}
+First(A) 	{a}
+First(B) 	{b}
+
+Follow(S) 	{$}
+Follow(A) 	{c, b}
+Follow(B) 	{c}
+
+
+
+
+grammar04:
+
+DerivesEmpty(S)	True 
+DerivesEmpty(A) True
+DerivesEmpty(B) False
+DerivesEmpty(C) True
+DerivesEmpty(D) False
+DerivesEmpty(E) True
+DerivesEmpty(F) False
+
+First(S) 	{$, a, c, b, e}
+First(A) 	{a, c}
+First(B) 	{a, c}
+First(C) 	{b, e}
+First(D) 	{b, e}
+First(E) 	{f, g}
+First(F) 	{b, h}
+
+Follow(S) 	{$}
+Follow(A) 	{$, b, e}
+Follow(B) 	{a, c, $, b, e}
+Follow(C) 	{$}
+Follow(D) 	{b, e, $}
+Follow(E) 	{b, e, $}
+Follow(F) 	{f, g, b, e, $}
