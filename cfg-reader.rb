@@ -191,7 +191,7 @@ $productions.each do |lhs, rules|
   rules.each do |rhs|
     puts "(#{ruleNum})\t\t#{lhs} -> #{rhs}"
     print "First set:\t"
-    puts "#{firstSet(rhs, Set.new).inspect}\n\n"
+    puts "{#{firstSet(rhs, Set.new).to_a.join(", ")}}\n\n"
 
     ruleNum += 1
   end
