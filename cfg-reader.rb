@@ -3,15 +3,17 @@
 require 'set'
 
 # setup some data structures to represent the grammar
-$terminals = Set.new
+$terminals = Set["$"]
 $nonterminals = Set.new
 $startSymbol = ''
+
+#key = LHS, value = RHS
 $productions = Hash.new
 
 # hashtables that answer if specific rules or symbols can derive lamda
-# populated by DerivesEmptyString
-$symbolDerivesEmpty = Hash.new
-$ruleDerivesEmpty = Hash.new
+# populated by derivesToLambda
+$symbolDerivesLambda = Hash.new
+$ruleDerivesLambda = Hash.new
 
 # the current left hand side for the production being read
 $LHS = ''
@@ -30,15 +32,57 @@ def leftHandSide(p)
   # 
 end
 
-# returns an iterator that visits each production for the non-terminal a
-def ProductionsFor(a)
+# returns the set of productions for the non-terminal a
+def productionsFor(a)
   if $productions[a]
-    $productions.each
+    return $productions[a]
+  else
+    # since lambda is not considered a terminal, the first set will look for productions with
+    # lambda on the LHS, and this allows any iteration over the results of this function to be
+    # agnostic to whether there actually are any productions or not
+    return Set.new
   end
 end
 
 # checks which rules can derive lambda in one or more derivations
-def DerviesEmptyString
+def derviesToLambda(x)
+  # todo
+  return false
+end
+
+# calculates the first set (set of terminals) for a given grammar sequence
+def firstSet(seq, visited)
+
+  # return the empty set for an empty input string
+  if seq.empty?; {}; end
+
+  # check if the first token is already a terminal
+  sep = seq.split
+  x = sep[0]
+  if $terminals.include? x
+    return Set[x]
+  end
+
+  # else it's a non-terminal
+  f = Set.new
+  unless visited.include? x
+    visited << x
+    productionsFor(x).each do |r|
+      g = firstSet(r, visited)
+      f = f | g
+    end
+  end
+
+  if derviesToLambda x
+    # run the algorithm on the subsequent symbols
+    g = firstSet(sep.drop(1).join(' '), visited)
+    f = f | g
+  end
+
+  return f
+end
+
+def followSet
   # todo
 end
 
@@ -94,8 +138,9 @@ def findTerminals(line)
       # split this token into terminals and non-terminals
       terms = t.split(" ").map(&:strip)
       terms.each do |x|
-        # must be lowercase, do not count the end of input token as a non-terminal
-        if isLowerCase x and x != "$"
+        # must be lowercase, do not count the end of input token as
+        # a non-terminal, nor the lambda symbol
+        if isLowerCase x and x != "$" and x != "lambda"
           # this is a non-terminal
           $terminals << x
         end
@@ -134,15 +179,21 @@ while (line = file.gets)
 end
 file.close
 
-#print out results
+# print out results
 puts "Terminals: #{$terminals.to_a.join(", ")}"
 puts "Non-terminals: #{$nonterminals.to_a.join(", ")}"
 puts "Start symbol: #{$startSymbol}"
 ruleNum = 1
 puts "\nRules of this grammar:"
-$productions.each do |lhs, rhs|
-  rhs.each do |rule|
-    puts "(#{ruleNum})\t#{lhs} -> #{rule}"
+
+
+$productions.each do |lhs, rules|
+  rules.each do |rhs|
+    puts "(#{ruleNum})\t\t#{lhs} -> #{rhs}"
+    print "First set:\t"
+    puts "#{firstSet(rhs, Set.new).inspect}\n\n"
+
     ruleNum += 1
   end
 end
+
