@@ -54,11 +54,13 @@ end
 def firstSet(seq, visited)
 
   # return the empty set for an empty input string
-  if seq.empty?; {}; end
+  if seq.empty?; return {}; end
 
   # check if the first token is already a terminal
   sep = seq.split
   x = sep[0]
+
+  #puts "Seq: #{seq}, empty? #{seq.empty?}, Sep: #{sep.inspect}, x: #{x}, eq lambda? #{x == "lambda"}"
   if $terminals.include? x
     return Set[x]
   end
@@ -73,7 +75,7 @@ def firstSet(seq, visited)
     end
   end
 
-  if derviesToLambda x
+  if x == "lambda" or derviesToLambda x
     # run the algorithm on the subsequent symbols
     g = firstSet(sep.drop(1).join(' '), visited)
     f = f | g
