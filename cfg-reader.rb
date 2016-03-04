@@ -227,7 +227,7 @@ def findTerminals(line)
 end
 
 def parseLine(line)
-  puts "Read line: #{line}"
+  #puts "Read line: #{line}"
   if line.empty?
     return
   end
