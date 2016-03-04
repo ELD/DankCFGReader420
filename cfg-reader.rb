@@ -13,7 +13,7 @@ $productions = Hash.new
 # hashtables that answer if specific rules or symbols can derive lamda
 # populated by derivesToLambda
 $symbolDerivesToLambda = Hash.new
-$ruleDerivesLambda = Hash.new
+$checked = Hash.new
 
 # the current left hand side for the production being read
 $LHS = ''
@@ -46,50 +46,42 @@ end
 
 # checks which rules can derive lambda in one or more derivations
 def derivesToLambda(x)
-
-  puts "WE GOT:#{x} of type: #{x.class};"
-  #nils are a thing :( shit's broke yo
-  if(x.nil? || x == "")
-    puts "We got a nil brah"
-    return false
-  end
-  #check for lamb dah
-  if(x == "lambda")
-    puts "went to lamb duh"
-    return true
-  end
-  
-  x.gsub!(/[a-z]/,'')
+  #puts "Received:\"#{x}\""
+  x.gsub!(/[a-z]/,'')#make this better, but not meow
   if(x.length <1)
     return false
   end
-  x.each do |i|
-    
-    #if(isLowerCase(i) && x.length > 1)
-    #  puts "DELETING+1:#{i}"
-    #  x.delete("#{i} ")
-    #elsif (isLowerCase(i))
-    #  puts "DELETING:#{i}"
-    #  x.delete("#{i}")
-    #end
+  #check for lamb dah or if it already derives
+  if(x == "lambda" || $symbolDerivesToLambda[x] == true)
+    #puts "went to lamb duh"
+    return true
   end
-  puts "Parsing:\"#{x}\""
+  #puts "\tParsing:\"#{x}\""#check x's rule for lambdas
+  $productions[x].each do |i|
+    if(i == "lambda")
+      $checked[x] = true
+      $symbolDerivesToLambda[x] = true#if prod[x] contains a lambda, then yey
+      return true;
+    end
+    $symbolDerivesToLambda[x] = false
+  end
+  $checked[x] = true
+  #since x does not immediately contain a lamb, then check the non terminals within X
   $productions[x].each do |i|
     i.split(" ").each do |j|
-      #if we have already shown to got lambda, return true
-      if($symbolDerivesToLambda[j])
-        puts "Derives to Lambduh"
-        return true
+      if($symbolDerivesToLambda[j] == false)
+        return false
       end
-      #if it is found to eventually derive to lambda, add it and return true
-      if(derivesToLambda(j))
-        $symbolDerivesToLambda[j => true]
-        puts "Derives to Lambduh"
+      if($checked[j] == true && $symbolDerivesToLambda[j] == true)
         return true
+      else
+        if(derivesToLambda(j))
+          return true
+        end
       end
     end
   end
-
+  $symbolDerivesToLambda[x] = false
   return false
 end
 
@@ -242,3 +234,13 @@ $productions.each do |lhs, rules|
   end
 end
 
+puts "DEBUG"
+puts "A:#{derivesToLambda("A")}"
+puts "B:#{derivesToLambda("B")}"
+puts "C:#{derivesToLambda("C")}"
+puts "D:#{derivesToLambda("D")}"
+puts "E:#{derivesToLambda("E")}"
+puts "F:#{derivesToLambda("F")}"
+puts "G:#{derivesToLambda("G")}"
+puts "H:#{derivesToLambda("H")}"
+puts "I:#{derivesToLambda("I")}"
