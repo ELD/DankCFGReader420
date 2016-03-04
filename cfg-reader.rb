@@ -119,8 +119,42 @@ def firstSet(seq, visited)
   return f
 end
 
-def followSet
-  # todo
+def followSet(a, s)
+    if s.include?(a)
+        return Set.new
+    end
+
+    s.add(a)
+
+    f = Set.new
+
+    productions = Set.new
+    $productions.each do |lhs, rules|
+        rules.each do |rule|
+            rule.split.each do |token|
+                if a == token
+                    productions.add([lhs, rule.split])
+                end
+            end
+        end
+    end
+
+    productions.each do |lhs, rule|
+        rule.map.with_index{|token, index| index if token == a}.compact.each do |index|
+            following = rule[(index + 1)..-1]
+            g = firstSet(following.join(" "), Set.new)
+            f = f.union(g)
+
+            all_lambda = following.all?{|token| derviesToLambda(token)}
+            if all_lambda
+                g = followSet(lhs, s)
+                f = f.union(g)
+            end
+        end
+    end
+
+    return f
+
 end
 
 # ==APPLICATION LOGIC==
@@ -234,13 +268,8 @@ $productions.each do |lhs, rules|
   end
 end
 
-puts "DEBUG"
-puts "A:#{derivesToLambda("A")}"
-puts "B:#{derivesToLambda("B")}"
-puts "C:#{derivesToLambda("C")}"
-puts "D:#{derivesToLambda("D")}"
-puts "E:#{derivesToLambda("E")}"
-puts "F:#{derivesToLambda("F")}"
-puts "G:#{derivesToLambda("G")}"
-puts "H:#{derivesToLambda("H")}"
-puts "I:#{derivesToLambda("I")}"
+$nonterminals.each do |a|
+    follow_set = followSet(a, Set.new)
+
+    puts "Follow Set for #{a}: {#{follow_set.to_a.join(", ")}}"
+end
