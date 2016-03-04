@@ -56,6 +56,9 @@ def derivesToLambda(x)
     #puts "went to lamb duh"
     return true
   end
+  if (x == "$")
+      return false
+  end
   #puts "\tParsing:\"#{x}\""#check x's rule for lambdas
   $productions[x].each do |i|
     if(i == "lambda")
@@ -144,6 +147,7 @@ def followSet(a, s)
             following = rule[(index + 1)..-1]
             g = firstSet(following.join(" "), Set.new)
             f = f.union(g)
+
 
             all_lambda = following.all?{|token| derivesToLambda(token)}
             if all_lambda
