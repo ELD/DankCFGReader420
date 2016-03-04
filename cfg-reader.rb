@@ -145,7 +145,7 @@ def followSet(a, s)
             g = firstSet(following.join(" "), Set.new)
             f = f.union(g)
 
-            all_lambda = following.all?{|token| derviesToLambda(token)}
+            all_lambda = following.all?{|token| derivesToLambda(token)}
             if all_lambda
                 g = followSet(lhs, s)
                 f = f.union(g)
