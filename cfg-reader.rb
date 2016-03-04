@@ -46,6 +46,7 @@ end
 
 # checks which rules can derive lambda in one or more derivations
 def derivesToLambda(x)
+
   puts "WE GOT:#{x} of type: #{x.class};"
   #nils are a thing :( shit's broke yo
   if(x.nil? || x == "")
@@ -58,25 +59,32 @@ def derivesToLambda(x)
     return true
   end
   
-  x.each do |i|
-    if(isLowerCase(i) && x.length > 1)
-      puts "DELETING+1:#{i}"
-      x.delete("#{i} ")
-    elsif (isLowerCase(i))
-      puts "DELETING:#{i}"
-      x.delete("#{i}")
-    end
+  x.gsub!(/[a-z]/,'')
+  if(x.length <1)
+    return false
   end
-  puts "Parsing:#{x}"
+  x.each do |i|
+    
+    #if(isLowerCase(i) && x.length > 1)
+    #  puts "DELETING+1:#{i}"
+    #  x.delete("#{i} ")
+    #elsif (isLowerCase(i))
+    #  puts "DELETING:#{i}"
+    #  x.delete("#{i}")
+    #end
+  end
+  puts "Parsing:\"#{x}\""
   $productions[x].each do |i|
     i.split(" ").each do |j|
       #if we have already shown to got lambda, return true
       if($symbolDerivesToLambda[j])
+        puts "Derives to Lambduh"
         return true
       end
       #if it is found to eventually derive to lambda, add it and return true
       if(derivesToLambda(j))
         $symbolDerivesToLambda[j => true]
+        puts "Derives to Lambduh"
         return true
       end
     end
@@ -110,7 +118,7 @@ def firstSet(seq, visited)
     end
   end
 
-  if x == "lambda" or derviesToLambda x
+  if x == "lambda" or derivesToLambda x
     # run the algorithm on the subsequent symbols
     g = firstSet(sep.drop(1).join(' '), visited)
     f = f | g
