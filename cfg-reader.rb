@@ -46,8 +46,8 @@ end
 
 # checks which rules can derive lambda in one or more derivations
 def derivesToLambda(x)
-  #puts "Received:\"#{x}\""
-  x.gsub!(/[a-z]/,'')#make this better, but not meow
+  puts "Received:\"#{x}\""
+  x.gsub!(/[a-zA-Z]/,'')#make this better, but not meow
   if(x.length <1)
     return false
   end
@@ -70,7 +70,7 @@ def derivesToLambda(x)
   end
   $checked[x] = true
   #since x does not immediately contain a lamb, then check the non terminals within X
-  $productions[x].each do |i|
+  productionsFor(x).each do |i|
     i.split(" ").each do |j|
       if($symbolDerivesToLambda[j] == false)
         return false
