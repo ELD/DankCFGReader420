@@ -12,7 +12,7 @@ $productions = Hash.new
 
 # hashtables that answer if specific rules or symbols can derive lamda
 # populated by derivesToLambda
-$symbolDerivesLambda = Hash.new
+$symbolDerivesToLambda = Hash.new
 $ruleDerivesLambda = Hash.new
 
 # the current left hand side for the production being read
@@ -45,8 +45,43 @@ def productionsFor(a)
 end
 
 # checks which rules can derive lambda in one or more derivations
-def derviesToLambda(x)
-  # todo
+def derivesToLambda(x)
+  puts "WE GOT:#{x} of type: #{x.class};"
+  #nils are a thing :( shit's broke yo
+  if(x.nil? || x == "")
+    puts "We got a nil brah"
+    return false
+  end
+  #check for lamb dah
+  if(x == "lambda")
+    puts "went to lamb duh"
+    return true
+  end
+  
+  x.each do |i|
+    if(isLowerCase(i) && x.length > 1)
+      puts "DELETING+1:#{i}"
+      x.delete("#{i} ")
+    elsif (isLowerCase(i))
+      puts "DELETING:#{i}"
+      x.delete("#{i}")
+    end
+  end
+  puts "Parsing:#{x}"
+  $productions[x].each do |i|
+    i.split(" ").each do |j|
+      #if we have already shown to got lambda, return true
+      if($symbolDerivesToLambda[j])
+        return true
+      end
+      #if it is found to eventually derive to lambda, add it and return true
+      if(derivesToLambda(j))
+        $symbolDerivesToLambda[j => true]
+        return true
+      end
+    end
+  end
+
   return false
 end
 
@@ -73,7 +108,7 @@ def firstSet(seq, visited)
     end
   end
 
-  if derviesToLambda x
+  if derivesToLambda x
     # run the algorithm on the subsequent symbols
     g = firstSet(sep.drop(1).join(' '), visited)
     f = f | g
