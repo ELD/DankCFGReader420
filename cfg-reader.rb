@@ -123,41 +123,41 @@ def firstSet(seq, visited)
 end
 
 def followSet(a, s)
-    if s.include?(a)
-        return Set.new
-    end
+  if s.include?(a)
+    return Set.new
+  end
 
-    s.add(a)
+  s.add(a)
 
-    f = Set.new
+  f = Set.new
 
-    productions = Set.new
-    $productions.each do |lhs, rules|
-        rules.each do |rule|
-            rule.split.each do |token|
-                if a == token
-                    productions.add([lhs, rule.split])
-                end
-            end
+  productions = Set.new
+  $productions.each do |lhs, rules|
+    rules.each do |rule|
+      rule.split.each do |token|
+        if a == token
+          productions.add([lhs, rule.split])
         end
+      end
     end
+  end
 
-    productions.each do |lhs, rule|
-        rule.map.with_index{|token, index| index if token == a}.compact.each do |index|
-            following = rule[(index + 1)..-1]
-            g = firstSet(following.join(" "), Set.new)
-            f = f.union(g)
+  productions.each do |lhs, rule|
+    rule.map.with_index{|token, index| index if token == a}.compact.each do |index|
+      following = rule[(index + 1)..-1]
+      g = firstSet(following.join(" "), Set.new)
+      f = f.union(g)
 
 
-            all_lambda = following.all?{|token| derivesToLambda(token)}
-            if all_lambda
-                g = followSet(lhs, s)
-                f = f.union(g)
-            end
-        end
+      all_lambda = following.all?{|token| derivesToLambda(token)}
+      if all_lambda
+        g = followSet(lhs, s)
+        f = f.union(g)
+      end
     end
+  end
 
-    return f
+  return f
 
 end
 
