@@ -46,9 +46,8 @@ end
 
 # checks which rules can derive lambda in one or more derivations
 def derivesToLambda(x)
-  puts "Received:\"#{x}\""
-  x.gsub!(/[a-zA-Z]/,'')#make this better, but not meow
-  if(x.length <1)
+  #puts "Received:\"#{x}\""
+  if $terminals.include? x
     return false
   end
   #check for lamb dah or if it already derives
