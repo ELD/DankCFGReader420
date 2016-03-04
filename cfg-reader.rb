@@ -60,7 +60,7 @@ def derivesToLambda(x)
       return false
   end
   #puts "\tParsing:\"#{x}\""#check x's rule for lambdas
-  $productions[x].each do |i|
+  productionsFor(x).each do |i|
     if(i == "lambda")
       $checked[x] = true
       $symbolDerivesToLambda[x] = true#if prod[x] contains a lambda, then yey
@@ -98,6 +98,8 @@ def firstSet(seq, visited)
   sep = seq.split
   x = sep[0]
 
+  #puts "Seq: #{seq}, sep: #{sep.inspect}"
+
   #puts "Seq: #{seq}, empty? #{seq.empty?}, Sep: #{sep.inspect}, x: #{x}, eq lambda? #{x == "lambda"}"
   if $terminals.include? x
     return Set[x]
@@ -113,6 +115,7 @@ def firstSet(seq, visited)
     end
   end
 
+  #puts "The value of x is #{x}"
   if x == "lambda" or derivesToLambda x
     # run the algorithm on the subsequent symbols
     g = firstSet(sep.drop(1).join(' '), visited)
@@ -225,6 +228,11 @@ def findTerminals(line)
 end
 
 def parseLine(line)
+  puts "Read line: #{line}"
+  if line.empty?
+    return
+  end
+
   sides = line.split("->").map(&:strip)
   findNonTerminals sides
 
