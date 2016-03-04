@@ -257,9 +257,7 @@ end
 # read the CFG line by line
 file = File.new(ARGV[0], "r")
 while (line = file.gets)
-  line.chomp!
-  break if line.empty?
-  parseLine(line)
+  parseLine(line.chomp)
 end
 file.close
 

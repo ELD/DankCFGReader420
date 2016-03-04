@@ -8,7 +8,7 @@ First(S) 	{a, b, c, d}
 First(B) 	{b, c, d}
 First(C) 	{c, d}
 
-Follow(S) 	{$, e}
+Follow(S) 	{e}
 Follow(B) 	{e, $}
 Follow(C) 	{e, $}
 
@@ -30,11 +30,11 @@ First(B) 	{b}
 First(Q) 	{q}
 
 
-Follow(S) 	{$}
+Follow(S) 	{}
 Follow(C) 	{d, $}
-Follow(A) 	{c}
-Follow(B) 	{c, q}
-Follow(Q) 	{c}
+Follow(A) 	{c, $}
+Follow(B) 	{c, d, q, $}
+Follow(Q) 	{c, $}
 
 
 
@@ -49,7 +49,7 @@ First(S) 	{c, a, b}
 First(A) 	{a}
 First(B) 	{b}
 
-Follow(S) 	{$}
+Follow(S) 	{}
 Follow(A) 	{c, b}
 Follow(B) 	{c}
 
@@ -74,7 +74,7 @@ First(D) 	{b, e}
 First(E) 	{f, g}
 First(F) 	{b, h}
 
-Follow(S) 	{$}
+Follow(S) 	{}
 Follow(A) 	{$, b, e}
 Follow(B) 	{a, c, $, b, e}
 Follow(C) 	{$}
@@ -92,9 +92,9 @@ First(E) {v, f}
 First(Prefix) {f}
 First(Tail) {+}
 
-Follow(E) {$, )}
+Follow(E) {)}
 Follow(Prefix) {(}
-Follow(Tail) {$, )}
+Follow(Tail) {)}
 
 Grammar 06:
 DerivesToLambda(S) false
@@ -105,7 +105,7 @@ First(S) {a, b , c, d}
 First(B) {b, c, d}
 First(C) {c, d}
 
-Follow(S) {$, e}
+Follow(S) {e}
 Follow(B) {e, $}
 Follow(C) {e, $}
 
@@ -119,21 +119,21 @@ DerivesToLambda(ExprTail) True
 DerivesToLambda(Val) False
 DerivesToLambda(Prog) True
 
+First(Prog) {floatdcl, intdcl, id, print, $}
 First(Dcls) {floatdcl, intdcl}
 First(Dcl) {floatdcl, intdcl}
-First(Stmts) {id, print}
-First(Stmt) {id, print}
+First(Stmts) {id, print, plus, minus}
+First(Stmt) {id, print, plus, minus}
 First(ExprTail) {plus, minus}
 First(Val) {id, num}
-First(Prog) {floatdcl, intdcl}
 
-Follow(Dcls) {id, print}
-Follow(Dcl) {id, print}
+Follow(Prog) {}
+Follow(Dcls) {id, print, $}
+Follow(Dcl) {id, print, $, floatdcl, incdcl}
 Follow(Stmts) {$}
-Follow(Stmt) {id, print}
-Follow(ExprTail) {id, print}
-Follow(Val) {plus, minus}
-Follow(Prog) {$}
+Follow(Stmt) {id, print, $}
+Follow(ExprTail) {id, print, $}
+Follow(Val) {plus, minus, id, print, $}
 
 Grammar 08:
 
@@ -149,6 +149,6 @@ First(VarTail) {(}
 
 Follow(Expr) {$, )}
 Follow(ExprTail) {$, )}
-Follow(Var) {-}
-Follow(VarTail) {-}
+Follow(Var) {-, $, )}
+Follow(VarTail) {-, $, )}
 
