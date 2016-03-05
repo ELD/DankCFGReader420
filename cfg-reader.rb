@@ -2,6 +2,7 @@
 
 require 'set'
 
+# ==Global Variables==
 # setup some data structures to represent the grammar
 $terminals = Set["$"]
 $nonterminals = Set.new
@@ -17,6 +18,10 @@ $checked = Hash.new
 
 # the current left hand side for the production being read
 $LHS = ''
+
+# the LL(1) table's name. The actual declaration and intit are done in fillTable()
+#$parseTable
+
 
 # ==SUPPORTING FUNCTIONS==
 
@@ -163,6 +168,38 @@ def followSet(a, s)
 
 end
 
+# returns a set of terminals, the predict set for a given production
+def predict(lhs, rhs)
+  # temp value for fillTable to use
+  return Set.new
+end
+
+def fillTable
+  # declare the parse table
+  $parseTable = Array.new($nonterminals.length) { Array.new($terminals.length) }
+  
+  # init the table's rows and columns
+  $nonterminals.each_with_index do |n, nidx|
+    $terminals.each_with_index do |t, tidx|
+      $parseTable[nidx][tidx] = -1 # default value indicates error
+    end
+  end
+
+  # populate the table. Each value is an index into the set of productions for
+  # a particular non-terminal in the $productions hashmap. Since they are sets,
+  # they do not support random access via their index... We may need to change
+  # the data structure to use arrays instead of sets to facilitate this
+  $nonterminals.each_with_index do |n, nidx|
+    productionsFor(n).each_with_index do |p, pidx|
+      predict(n, p).each do |predictTerm|
+        # hoping that set -> array preserves the same order as doing Set.each
+        $parseTable[nidx][$terminals.to_a.index(predictTerm)] = pidx
+      end
+    end
+  end
+end
+
+
 # ==APPLICATION LOGIC==
 
 def isUpperCase(str)
@@ -283,4 +320,18 @@ $nonterminals.each do |a|
     follow_set = followSet(a, Set.new)
 
     puts "Follow Set for #{a}: {#{follow_set.to_a.join(", ")}}"
+end
+
+# populate the parse table
+fillTable
+
+# print the table
+puts "\nThe parse table for this grammar:"
+puts "      #{$terminals.to_a.join('   ')}"
+$nonterminals.each_with_index do |n, nidx|
+  print "#{n} | "
+  $terminals.each_with_index do |t, tidx|
+    print "%3d " % $parseTable[nidx][tidx]
+  end
+  puts "\n"
 end
