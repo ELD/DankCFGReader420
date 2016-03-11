@@ -344,12 +344,23 @@ end
 fillTable
 
 # print the table
-puts "\nThe parse table for this grammar:"
-puts "      #{$terminals.to_a.join('   ')}"
+puts "\nThe parse table for this grammar: (index per non-terminal, or -1 for syntax error)"
+# find the longest non-terminal to pad the other non-terms with space to have even columns
+len = 0
+$nonterminals.each do |n|
+  nlen = n.length
+  if nlen > len
+    len = nlen
+  end
+end
+print " " * (len + 4)
+puts " #{$terminals.to_a.join('   ')}"
 $nonterminals.each_with_index do |n, nidx|
-  print "#{n} | "
+  # label
+  print "%#{len}s | " % n
+  # row data
   $terminals.each_with_index do |t, tidx|
-    print "%3d " % $parseTable[nidx][tidx]
+    print "%#{t.length + 2}d " % $parseTable[nidx][tidx]
   end
   puts "\n"
 end
