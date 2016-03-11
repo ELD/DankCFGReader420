@@ -170,8 +170,26 @@ end
 
 # returns a set of terminals, the predict set for a given production
 def predict(lhs, rhs)
-  # temp value for fillTable to use
-  return Set.new
+  # create a new set for the terminals to be returned
+  terminals = Set.new
+
+  # if the rhs is just lambda then we do follow of lhs
+  if rhs == "lambda"
+    terminals = followSet(lhs, Set.new) 
+  
+  # if the rhs has all nonterminals that derive to lambda,
+  # we take the union of the follow(lhs) and first(rhs)
+  elsif rhs.split.all?{|token| derivesToLambda(token)}
+    terminals = followSet(lhs, Set.new) | firstSet(rhs, Set.new)
+  
+  # if the rhs contains terminals and does not derive to lambda,
+  # we just do the first(rhs)
+  else
+    terminals = firstSet(rhs, Set.new)
+  end	
+
+
+  return terminals
 end
 
 def fillTable
