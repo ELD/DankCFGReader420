@@ -251,9 +251,9 @@ end
 def llParser(ts)
 
   # Stack of tokens each of the form [tokenType, treeIndex]
-  tokenStack = [["S", 0]]
+  tokenStack = [[$startSymbol, 0]]
   
-  nodes = [["S", 0]]
+  nodes = [[$startSymbol, 0]]
   children = Hash.new
   children[0] = []
   
@@ -287,9 +287,10 @@ def llParser(ts)
       # puts "Nonterminal #{tokenStack[-1][0]}"
     
       token = ts[0][0]
-      
+  
       # TODO: check for error case here if not in table
       production = $parseTableHash[tokenStack[-1][0]][token]
+
       
       # Apply production
       top = tokenStack.pop()

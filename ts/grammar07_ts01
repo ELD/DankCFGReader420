@@ -1,0 +1,11 @@
+intdcl
+id x
+floatdcl
+id y
+id x
+assign
+num 5
+plus
+num 6
+print
+id x
