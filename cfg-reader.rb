@@ -257,6 +257,7 @@ def llParser(ts)
   children = Hash.new
   children[0] = []
   
+  # Incrementing counter to assign each node in the tree a unique id
   treeIndex = 0
   
   accepted = false
@@ -268,8 +269,15 @@ def llParser(ts)
   
     if ($terminals.include?(tokenStack[-1][0]))
       # puts "Terminal #{tokenStack[-1][0]}"
-    
+
+      
+      # Augment node with token data if it has any
+      if ts[0].size > 1
+        nodes[tokenStack[-1][1]] << ts[0][1..-1].join(" ")
+      end
+          
       match(ts, tokenStack[-1][0])
+      
       if (tokenStack[-1][0] == "$")
         accepted = true
       end
@@ -279,6 +287,8 @@ def llParser(ts)
       # puts "Nonterminal #{tokenStack[-1][0]}"
     
       token = ts[0][0]
+      
+      # TODO: check for error case here if not in table
       production = $parseTableHash[tokenStack[-1][0]][token]
       
       # Apply production
@@ -306,7 +316,7 @@ def llParser(ts)
   
   # Print nodes
   nodes.each do |node|
-    puts "#{node[1]} #{node[0]}"
+    puts "#{node[1]} #{node[0]} #{node[2]}"
   end
   
   puts
@@ -475,7 +485,7 @@ if (ARGV.length >= 2)
   ts = tokensFromFile(ARGV[1])
   
   puts "\nParse tree for the token stream in #{ARGV[1]}:"
-  puts "First set of lines specifies all the nodes in the form 'nodeId nodeContents'"
+  puts "First set of lines specifies all the nodes in the form 'nodeId tokenType [tokenValue]'"
   puts "Second set of lines specifies edges in the form 'parentId child1 child2 ...'"
   llParser(ts)
 end
