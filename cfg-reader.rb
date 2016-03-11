@@ -435,7 +435,7 @@ file.close
 puts "Terminals: #{$terminals.to_a.join(", ")}"
 puts "Non-terminals: #{$nonterminals.to_a.join(", ")}"
 puts "Start symbol: #{$startSymbol}"
-ruleNum = 1
+ruleNum = 0
 puts "\nRules of this grammar:"
 
 
