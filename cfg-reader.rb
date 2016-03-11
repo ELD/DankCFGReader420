@@ -186,7 +186,7 @@ def predict(lhs, rhs)
   # we just do the first(rhs)
   else
     terminals = firstSet(rhs, Set.new)
-  end	
+  end  
 
 
   return terminals
@@ -195,6 +195,9 @@ end
 def fillTable
   # declare the parse table
   $parseTable = Array.new($nonterminals.length) { Array.new($terminals.length) }
+  
+  # Parse table for indexing by tokens
+  $parseTableHash = Hash.new
   
   # init the table's rows and columns
   $nonterminals.each_with_index do |n, nidx|
@@ -208,12 +211,113 @@ def fillTable
   # they do not support random access via their index... We may need to change
   # the data structure to use arrays instead of sets to facilitate this
   $nonterminals.each_with_index do |n, nidx|
+    $parseTableHash[n] = Hash.new
     productionsFor(n).each_with_index do |p, pidx|
       predict(n, p).each do |predictTerm|
+        $parseTableHash[n][predictTerm] = p 
         # hoping that set -> array preserves the same order as doing Set.each
         $parseTable[nidx][$terminals.to_a.index(predictTerm)] = pidx
       end
     end
+  end
+end
+
+# Given a filename of a file containing one token per line, return an array of tokens
+# Each token is an array of at least size 1, where the first element is the token type
+def tokensFromFile(filename)
+  ts = []
+  File.readlines(filename).each do |line|
+    
+    # Allow for both token type and value by storing as array
+    arr = line.split
+    
+    # Ignore empty lines
+    if (arr.size > 0)
+      ts << arr
+    end
+  end
+  
+  # Add EOF token
+  ts << ["$"]
+ 
+  return ts
+end
+
+def match(ts, token)
+  tsToken = ts.shift 
+  # puts "Matching #{tsToken} to #{token}"
+end
+
+def llParser(ts)
+
+  # Stack of tokens each of the form [tokenType, treeIndex]
+  tokenStack = [["S", 0]]
+  
+  nodes = [["S", 0]]
+  children = Hash.new
+  children[0] = []
+  
+  treeIndex = 0
+  
+  accepted = false
+  
+  while !accepted
+    # print "tokenStack: #{tokenStack}\n"
+    # print "Nodes: #{nodes}\n"
+    # print "Children: #{children}\n"
+  
+    if ($terminals.include?(tokenStack[-1][0]))
+      # puts "Terminal #{tokenStack[-1][0]}"
+    
+      match(ts, tokenStack[-1][0])
+      if (tokenStack[-1][0] == "$")
+        accepted = true
+      end
+      top = tokenStack.pop()
+      
+    else
+      # puts "Nonterminal #{tokenStack[-1][0]}"
+    
+      token = ts[0][0]
+      production = $parseTableHash[tokenStack[-1][0]][token]
+      
+      # Apply production
+      top = tokenStack.pop()
+
+      parent = top[1]
+      children[parent] = []
+      # puts "Applying #{production}"
+      production.split.reverse_each do |x|
+        # Lambda is a special case, so don't push anything
+        if x != "lambda"
+          treeIndex += 1
+          # puts "Pushing #{[x, treeIndex]}"
+          tokenStack.push([x, treeIndex])
+          nodes << [x, treeIndex]
+          children[parent] << treeIndex
+        end
+      end
+      
+      # Reverse because order of elements pushed onto the stack is opposite of how they should appear in the tree
+      children[parent].reverse!
+
+    end
+  end
+  
+  # Print nodes
+  nodes.each do |node|
+    puts "#{node[1]} #{node[0]}"
+  end
+  
+  puts
+  
+  # Print edges
+  children.each do |node, childList|
+    print "#{node} "
+    childList.each do |child|
+       print "#{child} "
+    end
+    print "\n"
   end
 end
 
@@ -304,7 +408,7 @@ end
 # ==MAIN PROGRAM==
 #
 # check that there is a file specified
-unless ARGV.length == 1
+unless ARGV.length >= 1
   puts "Usage: ruby #{$0} myGrammar.cfg\n"
   exit
 end
@@ -353,3 +457,16 @@ $nonterminals.each_with_index do |n, nidx|
   end
   puts "\n"
 end
+
+
+# If a token file is specified, parse it
+if (ARGV.length >= 2)
+  ts = tokensFromFile(ARGV[1])
+  
+  puts "\nParse tree for the token stream in #{ARGV[1]}:"
+  puts "First set of lines specifies all the nodes in the form 'nodeId nodeContents'"
+  puts "Second set of lines specifies edges in the form 'parentId child1 child2 ...'"
+  llParser(ts)
+end
+
+  
