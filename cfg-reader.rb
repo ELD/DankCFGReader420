@@ -366,6 +366,14 @@ def findNonTerminals(sides)
   end
 end
 
+def goto(itemSet, X)#itemSet is an array of strings, X us tge current terminal
+  
+  return closure(itemSet)
+end
+
+def closure(itemSet)
+  
+end
 
 def findTerminals(line)
   # split the line by the alternation operator, and cleanup whitespace
